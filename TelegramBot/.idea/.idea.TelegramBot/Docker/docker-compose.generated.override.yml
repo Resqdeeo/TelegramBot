@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+version: "3.9"
+services:
+  telegrambot.webapi:
+    build:
+      context: "C:\\Projects\\Git\\TelegramBot\\TelegramBot\\TelegramBot"
+      dockerfile: "TelegramBot.WebAPI/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/TelegramBot.WebAPI.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "telegrambot.webapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Projects\\Git\\TelegramBot\\TelegramBot\\TelegramBot\\TelegramBot.WebAPI:/app:rw"
+    - "C:\\Projects\\Git\\TelegramBot\\TelegramBot\\TelegramBot:/src:rw"
+    - "C:\\Users\\Vlaze\\.nuget\\packages:/root/.nuget/packages"
+    working_dir: "/app"
