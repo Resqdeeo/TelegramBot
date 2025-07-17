@@ -1,15 +1,36 @@
 ﻿version: '3.9'
 
 services:
+  postgres:
+    image: postgres:latest
+    container_name: telegrambot.postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: TelegramBot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  
   telegrambot.webapi:
     image: telegrambot.webapi
     build:
       context: .
       dockerfile: TelegramBot.WebAPI/Dockerfile
-    container_name: telegram
+    container_name: telegrambot.webapi
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      ConnectionStrings__PostgresConnection: "Host=postgres;Port=5432;Username=postgres;Password=password;Database=TelegramBot;"
     volumes:
       - ./TelegramBot.WebAPI/appsettings.Development.json:/app/appsettings.Development.json
+        
+
+volumes:
+  postgres_data:
