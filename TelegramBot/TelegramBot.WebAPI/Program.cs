@@ -1,8 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using TelegramBot.Infrastructure.Contexts;
+using TelegramBot.WebAPI.Configurations;
 using TelegramBot.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddPostgreConfiguration(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -19,6 +24,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseAuthorization();
 app.MapControllers();
