@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TelegramBot.Application\TelegramBot.Application.csproj" />
       <ProjectReference Include="..\TelegramBot.Domain\TelegramBot.Domain.csproj" />
     </ItemGroup>
 

@@ -1,5 +1,8 @@
 namespace TelegramBot.Domain.Enums;
 
+/// <summary>
+/// Периодичность операции
+/// </summary>
 public enum OperationFrequency
 {
     Once,

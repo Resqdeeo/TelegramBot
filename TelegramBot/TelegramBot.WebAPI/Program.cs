@@ -1,18 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using TelegramBot.Infrastructure.Contexts;
 using TelegramBot.WebAPI.Configurations;
-using TelegramBot.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddPostgreConfiguration(builder.Configuration);
+builder.Services.AddServiceConfiguration();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<TelegramBotService>();
 
 var app = builder.Build();
 
