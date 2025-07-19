@@ -186,7 +186,7 @@ public class EditOperationCommand : IBotCommand, IBotCallbackCommand
 
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text:  $"📝Название: {operation.Title}\nОписание: {operation.Title}\nДата: {operation.ExecutionDateTime:g}\nПереодичность: ({operation.Frequency})",
+                text:  $"📝Название: {operation.Title}\nОписание: {operation.Description}\nДата: {operation.ExecutionDateTime:g}\nПереодичность: ({operation.Frequency})",
                 replyMarkup: inlineKeyboard, cancellationToken: cancellationToken);
         }
     }
