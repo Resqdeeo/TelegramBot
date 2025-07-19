@@ -17,6 +17,9 @@ public static class ServiceConfiguration
         services.AddScoped<IBotCommand, ListCommand>();
         services.AddScoped<IBotCommand, AddOperationCommand>();
         services.AddScoped<IBotCommand, HelpCommand>();
+        services.AddScoped<IBotCommand, DeleteOperationCommand>();
+        services.AddScoped<IBotCommand, EditOperationCommand>();
+
         
         services.AddHostedService<TelegramBotService>();
 

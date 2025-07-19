@@ -44,4 +44,9 @@ public class OperationRepository : IOperationRepository
         _context.Operations.Remove(operation);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateOperationAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

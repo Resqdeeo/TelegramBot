@@ -9,4 +9,5 @@ public interface IOperationRepository
     Task<IEnumerable<Operation>> GetPlannedForPeriodAsync(long userId, DateTime from, DateTime to);
     Task CreateOperationAsync(Operation operation);
     Task DeleteOperationAsync(Operation operation);
+    Task UpdateOperationAsync();
 }

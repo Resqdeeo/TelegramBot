@@ -43,8 +43,25 @@ public class TelegramBotService : BackgroundService
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Type != UpdateType.Message || update.Message?.Text == null)
+        if (update.Type == UpdateType.CallbackQuery)
+        {
+            using var scopeCallback = _services.CreateScope();
+            var callbackHandlers = scopeCallback.ServiceProvider.GetServices<IBotCommand>();
+            var callback = update.CallbackQuery;
+
+            var callbackHandler = callbackHandlers.FirstOrDefault(h => h.CanHandle(callback.Data, callback.Message.Chat.Id));
+
+            if (callbackHandler is IBotCallbackCommand botCallbackCommand && callback != null)
+            {
+                await botCallbackCommand.ExecuteAsync(botClient, callback, cancellationToken);
+            }
             return;
+        }
+
+        if(update.Type != UpdateType.Message || update.Message?.Text == null )
+        {
+            return;
+        }
 
         var message = update.Message;
         var userId = message.Chat.Id;
@@ -53,16 +70,17 @@ public class TelegramBotService : BackgroundService
         var handlers = scope.ServiceProvider.GetServices<IBotCommand>();
 
         var handler = handlers.FirstOrDefault(h => h.CanHandle(message.Text, userId));
-
+        
+        
         if (handler != null)
             await handler.ExecuteAsync(botClient, message, cancellationToken);
         else
             await botClient.SendTextMessageAsync(message.Chat.Id, "Неизвестная команда. Напиши /help", cancellationToken: cancellationToken);
     }
     
-    private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
         Console.WriteLine($"Ошибка: {exception.Message}");
-        return Task.CompletedTask;
+        await Task.Delay(1000, cancellationToken);
     }
 }

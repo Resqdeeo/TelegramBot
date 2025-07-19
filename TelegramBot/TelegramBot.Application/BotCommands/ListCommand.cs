@@ -31,7 +31,7 @@ public class ListCommand : IBotCommand
         }
         else
         {
-            var msg = string.Join("\n", ops.Select(o => $"📝 {o.Title} — {o.ExecutionDateTime:g} ({o.Frequency})"));
+            var msg = string.Join("\n", ops.Select(o => $"📝 {o.Title} {o.Description} — {o.ExecutionDateTime:g} ({o.Frequency})"));
             await botClient.SendTextMessageAsync(message.Chat.Id, msg, cancellationToken: cancellationToken);
         }
     }
