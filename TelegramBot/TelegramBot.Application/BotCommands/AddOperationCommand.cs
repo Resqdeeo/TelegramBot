@@ -13,11 +13,13 @@ public class AddOperationCommand : IBotCommand
     
     private readonly IUserStateService _stateService;
     private readonly IOperationService _operationService;
-
-    public AddOperationCommand(IUserStateService stateService, IOperationService operationService)
+    private readonly IMessageScheduler _scheduler;
+    
+    public AddOperationCommand(IUserStateService stateService, IOperationService operationService, IMessageScheduler scheduler)
     {
         _stateService = stateService;
         _operationService = operationService;
+        _scheduler = scheduler;
     }
     
     public bool CanHandle(string messageText) => messageText.StartsWith("/add");
@@ -79,15 +81,18 @@ public class AddOperationCommand : IBotCommand
                 {
                     context.Frequency = (OperationFrequency)freqIndex;
 
-                    await _operationService.AddOperationAsync(userId, new OperationDto
+                    var operation = new OperationDto
                     {
                         Title = context.Title!,
                         Description = context.Description!,
                         ExecutionDateTime = context.ExecutionDateTime!.Value,
                         Frequency = context.Frequency
-                    });
+                    };
+
+                    await _operationService.AddOperationAsync(userId, operation);
 
                     await client.SendTextMessageAsync(userId, "Операция успешно добавлена ✅", cancellationToken: cancellationToken);
+                    await _scheduler.ScheduleMessage(operation);
                     _stateService.ClearContext(userId);
                 }
                 else

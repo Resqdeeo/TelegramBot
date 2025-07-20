@@ -1,5 +1,6 @@
 using TelegramBot.Application.BotCommands;
 using TelegramBot.Application.Interfaces.Services;
+using TelegramBot.Infrastructure.Schedulers;
 using TelegramBot.Infrastructure.Services;
 using TelegramBot.WebAPI.Services;
 
@@ -11,8 +12,9 @@ public static class ServiceConfiguration
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOperationService, OperationService>();
-        
+        services.AddScoped<IMessageScheduler, MessageScheduler>();
         services.AddSingleton<IUserStateService, UserStateService>();
+        
         services.AddScoped<IBotCommand, StartCommand>();
         services.AddScoped<IBotCommand, ListCommand>();
         services.AddScoped<IBotCommand, AddOperationCommand>();

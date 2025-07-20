@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using Quartz;
+using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -10,22 +11,25 @@ public class TelegramBotService : BackgroundService
 {
     private readonly IConfiguration _configuration;
     private readonly IServiceProvider _services;
+    private readonly ISchedulerFactory _schedulerFactory;
     private ITelegramBotClient _botClient;
 
-    public TelegramBotService(IConfiguration configuration, IServiceProvider services)
+    public TelegramBotService(IConfiguration configuration, IServiceProvider services, ISchedulerFactory schedulerFactory)
     {
         _configuration = configuration;
         _services = services;
+        _schedulerFactory = schedulerFactory;
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var token = Environment.GetEnvironmentVariable("TELEGRAM_TOKEN");
         if (string.IsNullOrWhiteSpace(token))
             throw new InvalidOperationException("TELEGRAM_TOKEN environment variable is not set.");
 
         _botClient = new TelegramBotClient(token);
-        
+        await InitializeScheduler();
+
         var receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = Array.Empty<UpdateType>()
@@ -37,10 +41,21 @@ public class TelegramBotService : BackgroundService
             receiverOptions,
             stoppingToken
         );
-        
-        return Task.CompletedTask;
     }
 
+    private async Task InitializeScheduler()
+    {
+        using var scope = _services.CreateScope();
+        var scheduler = await _schedulerFactory.GetScheduler();
+        await scheduler.Start();
+        
+        // Восстановление задач из базы
+        var messageScheduler = scope.ServiceProvider.GetRequiredService<IMessageScheduler>();
+        await messageScheduler.StartAsync();
+    }
+    
+    
+    
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Type == UpdateType.CallbackQuery)

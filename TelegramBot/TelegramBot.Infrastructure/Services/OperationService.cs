@@ -92,6 +92,20 @@ public class OperationService : IOperationService
         }
     }
 
+    public async Task<List<OperationDto>> GetAllAsync()
+    {
+        var operations = await _operationRepo.GetAllAsync();
+
+        return operations.Select(o => new OperationDto
+        {
+            Id = o.Id,
+            Title = o.Title,
+            Description = o.Description,
+            ExecutionDateTime = o.ExecutionDateTime,
+            Frequency = o.Frequency
+        }).ToList();
+    }
+
     public async Task DeleteOperationAsync(long telegramId, long operationId)
     {
         var user = await _userRepo.GetByTelegramIdAsync(telegramId);

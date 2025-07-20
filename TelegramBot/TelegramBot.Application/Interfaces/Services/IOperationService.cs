@@ -10,4 +10,5 @@ public interface IOperationService
     Task<List<OperationDto>> GetUserOperationsAsync(long telegramId);
     Task<OperationDto> GetOperationByIdAsync(long telegramId, long opId);
     Task UpdateOperationAsync(long telegramId, OperationDto operation);
+    Task<List<OperationDto>> GetAllAsync();
 }

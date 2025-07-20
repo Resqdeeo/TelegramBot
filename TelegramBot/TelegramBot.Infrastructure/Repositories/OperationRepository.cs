@@ -16,7 +16,7 @@ public class OperationRepository : IOperationRepository
 
     public async Task<Operation?> GetByIdAsync(long id)
     {
-        return await _context.Operations.Include(o => o.History).FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Operations.Include(o => o.History).Include(o=>o.User).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public Task<IEnumerable<Operation>> GetByUserIdAsync(long userId)
@@ -48,5 +48,11 @@ public class OperationRepository : IOperationRepository
     public async Task UpdateOperationAsync()
     {
         await _context.SaveChangesAsync();
+    }
+
+    public Task<IEnumerable<Operation>> GetAllAsync()
+    {
+        return Task.FromResult<IEnumerable<Operation>>(
+            _context.Operations);
     }
 }
