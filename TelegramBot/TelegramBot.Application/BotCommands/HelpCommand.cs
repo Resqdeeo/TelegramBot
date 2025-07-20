@@ -17,6 +17,8 @@ public class HelpCommand : IBotCommand
         string helpText = "Вот список доступных команд:\n\n" +
                           "/help - Получить список команд\n" +
                           "/add - Добавить новую операцию (ввод по шагам)\n" +
+                          "/list - Вывести список\n" +
+                          "/edit - редактировать операцию\n" +
                           "/delete - Удалить существующую операцию (выбор из списка)";
 
         await botClient.SendTextMessageAsync(

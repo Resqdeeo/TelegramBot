@@ -8,4 +8,6 @@ public interface IOperationService
     Task<List<OperationDto>> GetUpcomingOperationsAsync(long telegramId, DateTime from, DateTime to);
     Task DeleteOperationAsync(long telegramId, long operationId);
     Task<List<OperationDto>> GetUserOperationsAsync(long telegramId);
+    Task<OperationDto> GetOperationByIdAsync(long telegramId, long opId);
+    Task UpdateOperationAsync(long telegramId, OperationDto operation);
 }

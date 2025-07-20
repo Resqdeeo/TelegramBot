@@ -8,4 +8,5 @@ public class OperationDto
     public string Description { get; set; } 
     public DateTime ExecutionDateTime { get; set; }
     public OperationFrequency Frequency { get; set; }
+    public long Id { get; set; }
 }
