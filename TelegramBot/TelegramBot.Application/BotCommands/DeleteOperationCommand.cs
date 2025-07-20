@@ -42,7 +42,7 @@ public class DeleteOperationCommand : IBotCommand, IBotCallbackCommand
 
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
-                text: "Выберите оперцаию для удаления:",
+                text: "Выберите операцию для удаления:",
                 replyMarkup: inlineKeyboard, cancellationToken: cancellationToken);
         }
     }
