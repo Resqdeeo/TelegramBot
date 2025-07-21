@@ -14,7 +14,7 @@ public static class ServiceConfiguration
         
         services.AddSingleton<IUserStateService, UserStateService>();
         services.AddScoped<IBotCommand, StartCommand>();
-        services.AddScoped<IBotCommand, ListCommand>();
+        services.AddScoped<IBotCommand, ListOperationsCommand>();
         services.AddScoped<IBotCommand, AddOperationCommand>();
         services.AddScoped<IBotCommand, HelpCommand>();
         services.AddScoped<IBotCommand, DeleteOperationCommand>();
