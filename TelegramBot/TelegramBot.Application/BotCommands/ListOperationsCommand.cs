@@ -36,6 +36,9 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
                 [
                     InlineKeyboardButton.WithCallbackData("На месяц", $"{Name}:month"),
                     InlineKeyboardButton.WithCallbackData("Все операции", $"{Name}:all")
+                ],
+                [
+                    InlineKeyboardButton.WithCallbackData("История операций", $"{Name}:history")
                 ]
             ]
         );
@@ -54,6 +57,15 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
 
         var userId = callback.Message.Chat.Id;
         var period = callback.Data.Split(':').Last();
+
+        if (period == "history")
+        {
+            var allOps = await _operationService.GetUserOperationsAsync(userId);
+            var pastOps = allOps
+                .Where(o => o.ExecutionDateTime <= DateTime.UtcNow).ToList();
+            await SendOperationsList(botClient, userId, pastOps, "История операций", cancellationToken);
+            return;
+        }
 
         DateTime from = DateTime.UtcNow;
         DateTime to = from;
@@ -75,7 +87,9 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
                 break;
             case "all":
                 var allOps = await _operationService.GetUserOperationsAsync(userId);
-                await SendOperationsList(botClient, userId, allOps, "Все операции", cancellationToken);
+                var futureOps = allOps
+                    .Where(o => o.ExecutionDateTime >= DateTime.UtcNow).ToList();
+                await SendOperationsList(botClient, userId, futureOps, "Все операции", cancellationToken);
                 return;
         }
 
