@@ -37,7 +37,8 @@ public class AddOperationCommand : IBotCommand
         if (context.Step == AddOperationStep.None)
         {
             context.Step = AddOperationStep.AwaitingTitle;
-            await client.SendTextMessageAsync(userId, "Введите название операции:", cancellationToken: cancellationToken);
+            await client.SendTextMessageAsync(userId, "Введите название операции:", 
+                cancellationToken: cancellationToken);
             return;
         }
 
@@ -46,13 +47,16 @@ public class AddOperationCommand : IBotCommand
             case AddOperationStep.AwaitingTitle:
                 context.Title = text;
                 context.Step = AddOperationStep.AwaitingDescription;
-                await client.SendTextMessageAsync(userId, "Введите описание:", cancellationToken: cancellationToken);
+                await client.SendTextMessageAsync(userId, "Введите описание:", 
+                    cancellationToken: cancellationToken);
                 break;
 
             case AddOperationStep.AwaitingDescription:
                 context.Description = text;
                 context.Step = AddOperationStep.AwaitingDateTime;
-                await client.SendTextMessageAsync(userId, "Введите дату и время выполнения (в формате дд.мм.гггг чч:мм):", cancellationToken: cancellationToken);
+                await client.SendTextMessageAsync(userId, 
+                    "Введите дату и время выполнения (в формате дд.мм.гггг чч:мм):",
+                    cancellationToken: cancellationToken);
                 break;
 
             case AddOperationStep.AwaitingDateTime:
@@ -62,15 +66,26 @@ public class AddOperationCommand : IBotCommand
                 {
                     date = DateTime.SpecifyKind(date, DateTimeKind.Local);
                     var utcDateTime = date.ToUniversalTime();
+                    if (utcDateTime < DateTime.UtcNow)
+                    {
+                        await client.SendTextMessageAsync(userId, 
+                            "Нельзя добавлять операции с датой в прошлом. Введите корректную дату",
+                            cancellationToken: cancellationToken);
+                        return;
+                    }
                     context.ExecutionDateTime = utcDateTime;
                     context.Step = AddOperationStep.AwaitingFrequency;
 
                     string freqList = string.Join("\n", Enum.GetNames(typeof(OperationFrequency)).Select((f, i) => $"{i}. {f}"));
-                    await client.SendTextMessageAsync(userId, $"Выберите периодичность операции (введите номер):\n{freqList}", cancellationToken: cancellationToken);
+                    await client.SendTextMessageAsync(userId, 
+                        $"Выберите периодичность операции (введите номер):\n{freqList}", 
+                        cancellationToken: cancellationToken);
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(userId, "Неверный формат даты. Повторите попытку (дд.мм.гггг чч:мм)", cancellationToken: cancellationToken);
+                    await client.SendTextMessageAsync(userId, 
+                        "Неверный формат даты. Повторите попытку (дд.мм.гггг чч:мм)", 
+                        cancellationToken: cancellationToken);
                 }
                 break;
 
@@ -87,12 +102,14 @@ public class AddOperationCommand : IBotCommand
                         Frequency = context.Frequency
                     });
 
-                    await client.SendTextMessageAsync(userId, "Операция успешно добавлена ✅", cancellationToken: cancellationToken);
+                    await client.SendTextMessageAsync(userId, "Операция успешно добавлена ✅", 
+                        cancellationToken: cancellationToken);
                     _stateService.ClearContext(userId);
                 }
                 else
                 {
-                    await client.SendTextMessageAsync(userId, "Неверный выбор. Введите номер из списка.", cancellationToken: cancellationToken);
+                    await client.SendTextMessageAsync(userId, "Неверный выбор. Введите номер из списка.", 
+                        cancellationToken: cancellationToken);
                 }
                 break;
         }
