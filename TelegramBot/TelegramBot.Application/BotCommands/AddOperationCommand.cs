@@ -71,7 +71,7 @@ public class AddOperationCommand : IBotCommand
                         await client.SendTextMessageAsync(userId, 
                             "Нельзя добавлять операции с датой в прошлом. Введите корректную дату",
                             cancellationToken: cancellationToken);
-                        return;
+                        break;
                     }
                     context.ExecutionDateTime = utcDateTime;
                     context.Step = AddOperationStep.AwaitingFrequency;

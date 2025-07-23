@@ -45,7 +45,7 @@ public class EditOperationCommand : IBotCommand, IBotCallbackCommand
 
                 await botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: "Выберите оперцаию для редактирования:",
+                    text: "Выберите операцию для редактирования:",
                     replyMarkup: inlineKeyboard, cancellationToken: cancellationToken);
                 return;
             }
