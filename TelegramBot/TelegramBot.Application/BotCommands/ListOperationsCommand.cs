@@ -69,7 +69,7 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
             return;
         }
 
-        DateTime from = DateTime.UtcNow;
+        DateTime from = DateTime.UtcNow + TimeSpan.FromHours(3);
         DateTime to = from;
         string periodName = "";
 
