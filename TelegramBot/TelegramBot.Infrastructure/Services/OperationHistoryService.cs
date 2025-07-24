@@ -7,15 +7,21 @@ namespace TelegramBot.Infrastructure.Services;
 public class OperationHistoryService : IOperationHistoryService
 {
     private readonly IOperationHistoryRepository _historyRepo;
+    private readonly IUserRepository _userRepository;
     
-    public OperationHistoryService(IOperationHistoryRepository historyRepo)
+    public OperationHistoryService(IOperationHistoryRepository historyRepo, IUserRepository userRepository)
     {
         _historyRepo = historyRepo;
+        _userRepository = userRepository;
     }
     
-    public async Task<List<OperationHistoryDto>> GetOperationHistoryAsync(long userId)
+    public async Task<List<OperationHistoryDto>> GetOperationHistoryAsync(long telegramId)
     {
-        var history = await _historyRepo.GetByUserIdAsync(userId);
+        var user = await _userRepository.GetByTelegramIdAsync(telegramId);
+        if (user == null)
+            return new List<OperationHistoryDto>();
+        
+        var history = await _historyRepo.GetByUserIdAsync(user.Id);
         
         return history.Select(h => new OperationHistoryDto
         {
