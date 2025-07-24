@@ -75,15 +75,15 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         {
             case "day":
                 to = from.AddDays(1);
-                periodName = "за день";
+                periodName = "на день";
                 break;
             case "week":
                 to = from.AddDays(7);
-                periodName = "за неделю";
+                periodName = "на неделю";
                 break;
             case "month":
                 to = from.AddMonths(1);
-                periodName = "за месяц";
+                periodName = "на месяц";
                 break;
             case "all":
                 var allOps = await _operationService.GetUserOperationsAsync(userId);
@@ -104,7 +104,7 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         {
             await botClient.SendTextMessageAsync(
                 chatId,
-                $"У вас нет операций {title.ToLower()}.",
+                $"У вас нет операций за этот период",
                 cancellationToken: cancellationToken);
         }
         else
