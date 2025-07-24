@@ -17,6 +17,7 @@ public static class ServiceConfiguration
             new TelegramBotClient(botToken));
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOperationService, OperationService>();
+        services.AddScoped<IOperationHistoryService, OperationHistoryService>();
         
         services.AddSingleton<IUserStateService, UserStateService>();
         services.AddScoped<IBotCommand, StartCommand>();
