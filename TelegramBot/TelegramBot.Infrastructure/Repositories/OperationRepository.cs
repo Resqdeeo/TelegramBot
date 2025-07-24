@@ -50,7 +50,30 @@ public class OperationRepository : IOperationRepository
     {
         await _context.SaveChangesAsync();
     }
-    
+
+    public async Task MarkAsCompletedAsync(long operationId)
+    {
+        var operation = await _context.Operations
+            .Include(o => o.History)
+            .FirstOrDefaultAsync(o => o.Id == operationId);
+
+        if (operation != null)
+        {
+            operation.History.Add(new OperationHistory
+            {
+                OperationId = operationId,
+                PerformedAt = DateTime.UtcNow
+            });
+            
+            // if (operation.Frequency == OperationFrequency.Once)
+            // {
+            //     _context.Operations.Remove(operation);
+            // }
+
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task<IEnumerable<Operation>> GetUpcomingOperationsAsync(DateTime currentTime)
     {
         return await _context.Operations

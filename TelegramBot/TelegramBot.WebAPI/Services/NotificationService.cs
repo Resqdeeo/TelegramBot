@@ -1,10 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using TelegramBot.Application.Entities;
+using TelegramBot.Application.Interfaces.Services;
 using TelegramBot.Domain.Enums;
 using TelegramBot.Domain.Interfaces;
 
@@ -164,6 +160,20 @@ namespace TelegramBot.WebAPI.Services
                 }
         
                 await SendNotificationAsync(op, message);
+            }
+            
+            if (op.Frequency == OperationFrequency.Once)
+            {
+                try 
+                {
+                    using var scope = _services.CreateScope();
+                    var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
+                    await operationService.MarkOperationAsCompletedAsync(op.User.TelegramId, op.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Ошибка при пометке операции {op.Id} как выполненной");
+                }
             }
         }
     }
