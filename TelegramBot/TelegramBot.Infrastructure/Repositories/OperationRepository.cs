@@ -62,7 +62,7 @@ public class OperationRepository : IOperationRepository
             operation.History.Add(new OperationHistory
             {
                 OperationId = operationId,
-                PerformedAt = DateTime.UtcNow
+                PerformedAt = operation.ExecutionDateTime
             });
 
             operation.ExecutionDateTime = operation.Frequency switch

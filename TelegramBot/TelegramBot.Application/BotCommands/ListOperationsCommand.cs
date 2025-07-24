@@ -96,8 +96,7 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         }
 
         var ops = await _operationService.GetUpcomingOperationsAsync(userId, from, to);
-        var futOps = ops.Where(o => o.ExecutionDateTime >= DateTime.UtcNow).ToList();
-        await SendOperationsList(botClient, userId, futOps, $"Операции {periodName}", cancellationToken);
+        await SendOperationsList(botClient, userId, ops, $"Операции {periodName}", cancellationToken);
     }
 
     private async Task SendOperationsList(ITelegramBotClient botClient, long chatId, List<OperationDto> ops,
