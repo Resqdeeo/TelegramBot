@@ -47,6 +47,7 @@ namespace TelegramBot.WebAPI.Services
                     foreach (var op in operations)
                     {
                         _logger.LogInformation($"Обработка операции: {op.Title} " + "{0:yyyy-MM-dd HH:mm:ss.fff}", op.ExecutionDateTime);
+                        await CheckOperationDueTimeAsync(op, now);
                         await ProcessOperationNotificationsAsync(op, now);
                     }
                 }
@@ -147,6 +148,22 @@ namespace TelegramBot.WebAPI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Ошибка отправки уведомления для операции {op.Id}");
+            }
+        }
+        
+        private async Task CheckOperationDueTimeAsync(Operation op, DateTime now)
+        {
+            // Проверяем, что текущее время попадает в окно срабатывания
+            if (now >= op.ExecutionDateTime - _checkInterval && 
+                now <= op.ExecutionDateTime + _checkInterval)
+            {
+                string message = $"⏰ Время выполнить операцию: {op.Title}\n";
+                if (!string.IsNullOrEmpty(op.Description))
+                {
+                    message += $"\n📝 Описание: {op.Description}";
+                }
+        
+                await SendNotificationAsync(op, message);
             }
         }
     }
