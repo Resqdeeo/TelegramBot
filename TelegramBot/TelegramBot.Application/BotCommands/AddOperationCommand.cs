@@ -75,8 +75,21 @@ public class AddOperationCommand : IBotCommand
                     }
                     context.ExecutionDateTime = utcDateTime;
                     context.Step = AddOperationStep.AwaitingFrequency;
+                    
+                    var frequencyNames = new Dictionary<OperationFrequency, string>
+                    {
+                        { OperationFrequency.Once, "Однократно" },
+                        { OperationFrequency.Hourly, "Каждый час" },
+                        { OperationFrequency.Daily, "Ежедневно" },
+                        { OperationFrequency.Weekly, "Еженедельно" },
+                        { OperationFrequency.Monthly, "Ежемесячно" },
+                        { OperationFrequency.Yearly, "Ежегодно" }
+                    };
 
-                    string freqList = string.Join("\n", Enum.GetNames(typeof(OperationFrequency)).Select((f, i) => $"{i}. {f}"));
+                    var frequencies = Enum.GetValues(typeof(OperationFrequency)).Cast<OperationFrequency>().ToList();
+                    string freqList = string.Join("\n", frequencies
+                        .Select((f, i) => $"{i}. {frequencyNames[f]}"));
+                    
                     await client.SendTextMessageAsync(userId, 
                         $"Выберите периодичность операции (введите номер):\n{freqList}", 
                         cancellationToken: cancellationToken);
