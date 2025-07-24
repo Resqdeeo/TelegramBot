@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TelegramBot.Application.Entities;
+using TelegramBot.Domain.Enums;
 using TelegramBot.Domain.Interfaces;
 using TelegramBot.Infrastructure.Contexts;
 
@@ -48,5 +49,17 @@ public class OperationRepository : IOperationRepository
     public async Task UpdateOperationAsync()
     {
         await _context.SaveChangesAsync();
+    }
+    
+    public async Task<IEnumerable<Operation>> GetUpcomingOperationsAsync(DateTime currentTime)
+    {
+        return await _context.Operations
+            .Include(o => o.User)
+            .Where(o => 
+                // Будущие разовые операции
+                (o.Frequency == OperationFrequency.Once && o.ExecutionDateTime > currentTime) ||
+                // Или все повторяющиеся операции
+                (o.Frequency != OperationFrequency.Once))
+            .ToListAsync();
     }
 }

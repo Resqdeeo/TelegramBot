@@ -1,3 +1,4 @@
+using Telegram.Bot;
 using TelegramBot.Application.BotCommands;
 using TelegramBot.Application.Interfaces.Services;
 using TelegramBot.Infrastructure.Services;
@@ -9,6 +10,11 @@ public static class ServiceConfiguration
 {
     public static IServiceCollection AddServiceConfiguration(this IServiceCollection services)
     {
+        
+        var botToken = Environment.GetEnvironmentVariable("TELEGRAM_TOKEN") 
+                       ?? throw new InvalidOperationException("TELEGRAM_TOKEN не установлен");
+        services.AddSingleton<ITelegramBotClient>(sp => 
+            new TelegramBotClient(botToken));
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IOperationService, OperationService>();
         
@@ -22,7 +28,8 @@ public static class ServiceConfiguration
 
         
         services.AddHostedService<TelegramBotService>();
-
+        services.AddHostedService<NotificationService>();
+        
         return services;
     }
 }

@@ -10,4 +10,6 @@ public interface IOperationRepository
     Task CreateOperationAsync(Operation operation);
     Task DeleteOperationAsync(Operation operation);
     Task UpdateOperationAsync();
+    Task<IEnumerable<Operation>> GetUpcomingOperationsAsync(DateTime currentTime);
+
 }

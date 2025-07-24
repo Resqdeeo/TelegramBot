@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TelegramBot.Infrastructure.Contexts;
 using TelegramBot.WebAPI.Configurations;
+using TelegramBot.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddServiceConfiguration();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -32,6 +34,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.Run();
 
