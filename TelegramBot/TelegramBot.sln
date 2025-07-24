@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot.WebAPI", "TelegramBot.WebAPI\TelegramBot.WebAPI.csproj", "{6A4A63B3-CDEA-4C15-8E79-A86CA7DB2229}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9B1900ED-0C66-48A0-BB87-147CD5C723BF}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yaml = docker-compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot.Domain", "TelegramBot.Domain\TelegramBot.Domain.csproj", "{5B356FEA-216D-4B3F-87E0-3415D7050F8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot.Application", "TelegramBot.Application\TelegramBot.Application.csproj", "{033D7BC8-6D2D-4854-B8AB-2F2B45C6E5FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBot.Infrastructure", "TelegramBot.Infrastructure\TelegramBot.Infrastructure.csproj", "{6536E06D-C468-43A9-BE00-7BBFFF0312D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6A4A63B3-CDEA-4C15-8E79-A86CA7DB2229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A4A63B3-CDEA-4C15-8E79-A86CA7DB2229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A4A63B3-CDEA-4C15-8E79-A86CA7DB2229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A4A63B3-CDEA-4C15-8E79-A86CA7DB2229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B356FEA-216D-4B3F-87E0-3415D7050F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B356FEA-216D-4B3F-87E0-3415D7050F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B356FEA-216D-4B3F-87E0-3415D7050F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B356FEA-216D-4B3F-87E0-3415D7050F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{033D7BC8-6D2D-4854-B8AB-2F2B45C6E5FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{033D7BC8-6D2D-4854-B8AB-2F2B45C6E5FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{033D7BC8-6D2D-4854-B8AB-2F2B45C6E5FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{033D7BC8-6D2D-4854-B8AB-2F2B45C6E5FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6536E06D-C468-43A9-BE00-7BBFFF0312D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6536E06D-C468-43A9-BE00-7BBFFF0312D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6536E06D-C468-43A9-BE00-7BBFFF0312D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6536E06D-C468-43A9-BE00-7BBFFF0312D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
