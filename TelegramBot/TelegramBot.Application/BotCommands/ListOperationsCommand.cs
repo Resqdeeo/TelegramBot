@@ -11,10 +11,14 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
     public string Name => "/list";
 
     private readonly IOperationService _operationService;
+    private readonly IOperationHistoryService _historyService;
 
-    public ListOperationsCommand(IOperationService operationService, IUserStateService userStateService)
+    public ListOperationsCommand(
+        IOperationService operationService,
+        IOperationHistoryService historyService)
     {
         _operationService = operationService;
+        _historyService = historyService;
     }
 
     public bool CanHandle(string messageText)
@@ -60,10 +64,8 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
 
         if (period == "history")
         {
-            var allOps = await _operationService.GetUserOperationsAsync(userId);
-            var pastOps = allOps
-                .Where(o => o.ExecutionDateTime <= DateTime.UtcNow).ToList();
-            await SendOperationsList(botClient, userId, pastOps, "История операций", cancellationToken);
+            var historyItems = await _historyService.GetOperationHistoryAsync(userId);
+            await SendHistoryList(botClient, userId, historyItems, cancellationToken);
             return;
         }
 
@@ -75,15 +77,15 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         {
             case "day":
                 to = from.AddDays(1);
-                periodName = "за день";
+                periodName = "на день";
                 break;
             case "week":
                 to = from.AddDays(7);
-                periodName = "за неделю";
+                periodName = "на неделю";
                 break;
             case "month":
                 to = from.AddMonths(1);
-                periodName = "за месяц";
+                periodName = "на месяц";
                 break;
             case "all":
                 var allOps = await _operationService.GetUserOperationsAsync(userId);
@@ -94,7 +96,8 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         }
 
         var ops = await _operationService.GetUpcomingOperationsAsync(userId, from, to);
-        await SendOperationsList(botClient, userId, ops, $"Операции {periodName}", cancellationToken);
+        var futOps = ops.Where(o => o.ExecutionDateTime >= DateTime.UtcNow).ToList();
+        await SendOperationsList(botClient, userId, futOps, $"Операции {periodName}", cancellationToken);
     }
 
     private async Task SendOperationsList(ITelegramBotClient botClient, long chatId, List<OperationDto> ops,
@@ -104,7 +107,7 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
         {
             await botClient.SendTextMessageAsync(
                 chatId,
-                $"У вас нет операций {title.ToLower()}.",
+                $"У вас нет операций за этот период",
                 cancellationToken: cancellationToken);
         }
         else
@@ -113,6 +116,34 @@ public class ListOperationsCommand : IBotCommand, IBotCallbackCommand
                 $"❗️ {o.Title}\n" +
                 $"⏱️ {o.ExecutionDateTime:g} ({o.Frequency})\n" +
                 $"📝 {(string.IsNullOrEmpty(o.Description) ? "Без описания" : o.Description)}"));
+
+            await botClient.SendTextMessageAsync(
+                chatId,
+                msg,
+                cancellationToken: cancellationToken);
+        }
+    }
+    
+    private async Task SendHistoryList(
+        ITelegramBotClient botClient, 
+        long chatId, 
+        List<OperationHistoryDto> historyItems,
+        CancellationToken cancellationToken)
+    {
+        if (historyItems.Count == 0)
+        {
+            await botClient.SendTextMessageAsync(
+                chatId,
+                "У вас нет ранее выполненных операций",
+                cancellationToken: cancellationToken);
+        }
+        else
+        {
+            var msg = "История выполненных операций:\n\n" + 
+                      string.Join("\n\n", historyItems.Select(h => 
+                          $"✅ {h.OperationTitle}\n" +
+                          $"⏱️ Выполнено: {h.PerformedAt:g}\n" +
+                          $"📝 {(string.IsNullOrEmpty(h.OperationDescription) ? "Без описания" : h.OperationDescription)}"));
 
             await botClient.SendTextMessageAsync(
                 chatId,

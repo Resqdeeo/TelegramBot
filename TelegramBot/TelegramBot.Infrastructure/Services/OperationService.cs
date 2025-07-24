@@ -92,6 +92,19 @@ public class OperationService : IOperationService
         }
     }
 
+    public async Task CompleteAndRescheduleOperationAsync(long telegramId, long operationId)
+    {
+        var user = await _userRepo.GetByTelegramIdAsync(telegramId);
+        if (user == null)
+            throw new Exception("User not found");
+
+        var operation = await _operationRepo.GetByIdAsync(operationId);
+        if (operation != null && operation.UserId == user.Id)
+        {
+            await _operationRepo.CompleteAndRescheduleOperationAsync(operationId);
+        }
+    }
+
     public async Task DeleteOperationAsync(long telegramId, long operationId)
     {
         var user = await _userRepo.GetByTelegramIdAsync(telegramId);

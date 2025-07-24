@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TelegramBot.Application.Entities;
 using TelegramBot.Domain.Interfaces;
 using TelegramBot.Infrastructure.Contexts;
@@ -18,6 +19,15 @@ public class OperationHistoryRepository : IOperationHistoryRepository
             _context.OperationHistories
                 .Where(h => h.OperationId == operationId)
                 .ToList());
+
+    public async Task<List<OperationHistory>> GetByUserIdAsync(long userId)
+    {
+        return await _context.OperationHistories
+            .Include(h => h.Operation)
+            .Where(h => h.Operation.UserId == userId)
+            .OrderByDescending(h => h.PerformedAt)
+            .ToListAsync();
+    }
 
     public async Task CreateAsync(OperationHistory history)
     {
