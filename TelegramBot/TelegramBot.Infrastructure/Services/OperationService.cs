@@ -92,7 +92,7 @@ public class OperationService : IOperationService
         }
     }
 
-    public async Task MarkOperationAsCompletedAsync(long telegramId, long operationId)
+    public async Task CompleteAndRescheduleOperationAsync(long telegramId, long operationId)
     {
         var user = await _userRepo.GetByTelegramIdAsync(telegramId);
         if (user == null)
@@ -101,7 +101,7 @@ public class OperationService : IOperationService
         var operation = await _operationRepo.GetByIdAsync(operationId);
         if (operation != null && operation.UserId == user.Id)
         {
-            await _operationRepo.MarkAsCompletedAsync(operationId);
+            await _operationRepo.CompleteAndRescheduleOperationAsync(operationId);
         }
     }
 

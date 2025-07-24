@@ -39,10 +39,11 @@ namespace TelegramBot.WebAPI.Services
                     var operations = await operationRepo.GetUpcomingOperationsAsync(now);
 
                     _logger.LogInformation($"Всего операций: {operations.Count()}");
-                    
+
                     foreach (var op in operations)
                     {
-                        _logger.LogInformation($"Обработка операции: {op.Title} " + "{0:yyyy-MM-dd HH:mm:ss.fff}", op.ExecutionDateTime);
+                        _logger.LogInformation($"Обработка операции: {op.Title} " + "{0:yyyy-MM-dd HH:mm:ss.fff}",
+                            op.ExecutionDateTime);
                         await CheckOperationDueTimeAsync(op, now);
                         await ProcessOperationNotificationsAsync(op, now);
                     }
@@ -83,52 +84,52 @@ namespace TelegramBot.WebAPI.Services
             var timeRemaining = op.ExecutionDateTime - now;
 
             _logger.LogInformation($"Осталось {timeRemaining} до выполнения операции '{op.Title}'");
-            
+
             if (timeRemaining <= TimeSpan.FromDays(1) && timeRemaining > TimeSpan.FromDays(1) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через день наступит операция '{op.Title}'");
             }
-            
+
             if (timeRemaining <= TimeSpan.FromHours(1) && timeRemaining > TimeSpan.FromHours(1) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через час наступит операция '{op.Title}'");
             }
-            
+
             if (timeRemaining <= TimeSpan.FromMinutes(15) && timeRemaining > TimeSpan.FromMinutes(15) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через 15 минут наступит операция '{op.Title}'");
             }
         }
-        
+
         private async Task CheckHourlyOperationAsync(Operation op, DateTime now)
         {
             var timeRemaining = op.ExecutionDateTime - now;
 
             _logger.LogInformation($"Осталось {timeRemaining} до выполнения операции '{op.Title}'");
-            
+
             if (timeRemaining <= TimeSpan.FromMinutes(15) && timeRemaining > TimeSpan.FromMinutes(15) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через 15 минут наступит операция '{op.Title}'");
             }
         }
-        
+
         private async Task CheckDailyOperationAsync(Operation op, DateTime now)
         {
             var timeRemaining = op.ExecutionDateTime - now;
 
             _logger.LogInformation($"Осталось {timeRemaining} до выполнения операции '{op.Title}'");
-            
+
             if (timeRemaining <= TimeSpan.FromHours(1) && timeRemaining > TimeSpan.FromHours(1) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через час наступит операция '{op.Title}'");
             }
-            
+
             if (timeRemaining <= TimeSpan.FromMinutes(15) && timeRemaining > TimeSpan.FromMinutes(15) - _checkInterval)
             {
                 await SendNotificationAsync(op, $"Напоминание: через 15 минут наступит операция '{op.Title}'");
             }
         }
-        
+
 
         private async Task SendNotificationAsync(Operation op, string message)
         {
@@ -138,19 +139,20 @@ namespace TelegramBot.WebAPI.Services
                     op.User.TelegramId,
                     message,
                     disableNotification: false);
-                
-                _logger.LogInformation($"Отправлено уведомление для операции {op.Id} пользователю {op.User.TelegramId}");
+
+                _logger.LogInformation(
+                    $"Отправлено уведомление для операции {op.Id} пользователю {op.User.TelegramId}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Ошибка отправки уведомления для операции {op.Id}");
             }
         }
-        
+
         private async Task CheckOperationDueTimeAsync(Operation op, DateTime now)
         {
             // Проверяем, что текущее время попадает в окно срабатывания
-            if (now >= op.ExecutionDateTime - _checkInterval && 
+            if (now >= op.ExecutionDateTime - _checkInterval &&
                 now <= op.ExecutionDateTime + _checkInterval)
             {
                 string message = $"⏰ Время выполнить операцию: {op.Title}\n";
@@ -158,21 +160,19 @@ namespace TelegramBot.WebAPI.Services
                 {
                     message += $"\n📝 Описание: {op.Description}";
                 }
-        
+
                 await SendNotificationAsync(op, message);
-            }
-            
-            if (op.Frequency == OperationFrequency.Once)
-            {
-                try 
+                
+                // Меняем время выполнения для неоднократных операций и добавляем срабатывания в историю
+                try
                 {
                     using var scope = _services.CreateScope();
                     var operationService = scope.ServiceProvider.GetRequiredService<IOperationService>();
-                    await operationService.MarkOperationAsCompletedAsync(op.User.TelegramId, op.Id);
+                    await operationService.CompleteAndRescheduleOperationAsync(op.User.TelegramId, op.Id);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Ошибка при пометке операции {op.Id} как выполненной");
+                    _logger.LogError(ex, $"Ошибка при пометке операции {op.Id}");
                 }
             }
         }

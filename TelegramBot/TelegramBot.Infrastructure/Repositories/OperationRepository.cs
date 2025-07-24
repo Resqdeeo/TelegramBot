@@ -51,7 +51,7 @@ public class OperationRepository : IOperationRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task MarkAsCompletedAsync(long operationId)
+    public async Task CompleteAndRescheduleOperationAsync(long operationId)
     {
         var operation = await _context.Operations
             .Include(o => o.History)
@@ -64,11 +64,16 @@ public class OperationRepository : IOperationRepository
                 OperationId = operationId,
                 PerformedAt = DateTime.UtcNow
             });
-            
-            // if (operation.Frequency == OperationFrequency.Once)
-            // {
-            //     _context.Operations.Remove(operation);
-            // }
+
+            operation.ExecutionDateTime = operation.Frequency switch
+            {
+                OperationFrequency.Hourly => operation.ExecutionDateTime.AddHours(1),
+                OperationFrequency.Daily => operation.ExecutionDateTime.AddDays(1),
+                OperationFrequency.Weekly => operation.ExecutionDateTime.AddDays(7),
+                OperationFrequency.Monthly => operation.ExecutionDateTime.AddMonths(1),
+                OperationFrequency.Yearly => operation.ExecutionDateTime.AddYears(1),
+                _ => operation.ExecutionDateTime
+            };
 
             await _context.SaveChangesAsync();
         }
@@ -78,7 +83,7 @@ public class OperationRepository : IOperationRepository
     {
         return await _context.Operations
             .Include(o => o.User)
-            .Where(o => 
+            .Where(o =>
                 // Будущие разовые операции
                 (o.Frequency == OperationFrequency.Once && o.ExecutionDateTime > currentTime) ||
                 // Или все повторяющиеся операции
