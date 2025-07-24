@@ -27,7 +27,8 @@
 - **Библиотека для Telegram API:** [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
 - **База данных:** PostgreSQL
 - **Хранение данных:** операции и пользователи сохраняются в БД.
-- **Архитектура:** Long Polling Web API.
+- **Архитектура:** Чистая архитектура (Clean Architecture) — слои WebAPI, Application, Domain, Infrastructure.
+- **Механизм получения обновлений:** Long Polling.
 - **Запуск:** Docker + Docker Compose.
 
 ---
